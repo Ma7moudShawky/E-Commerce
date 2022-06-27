@@ -1,4 +1,5 @@
-﻿using E_Commerce.ViewModels.Category;
+﻿using AutoMapper;
+using E_Commerce.ViewModels.Category;
 using IService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,12 @@ namespace E_Commerce.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+        private readonly IMapper _mapper;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, IMapper mapper)
         {
-            _categoryService = categoryService;
+            _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -21,11 +24,7 @@ namespace E_Commerce.Controllers
         {
             var categories = await _categoryService.GetAll();
 
-            var result = categories.Select(x => new CategoryViewModel
-            {
-                CategoryId = x.CategoryId,
-                CategoryName = x.CategoryName,
-            });
+            IEnumerable<CategoryViewModel> result = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
 
             return Ok(result);
         }
