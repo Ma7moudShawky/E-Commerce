@@ -47,7 +47,7 @@ namespace E_Commerce.Controllers
         {
             try
             {
-                CategoryDTO categoryDTO = await _categoryService.Get(categoryId);
+                CategoryDTO categoryDTO = await _categoryService.Get(categoryId, includeProducts: true);
                 if (categoryDTO == null)
                 {
                     return NotFound();
@@ -86,7 +86,7 @@ namespace E_Commerce.Controllers
         {
             try
             {
-                if (!_categoryService.CategoryExists(categoryId))
+                if (!await _categoryService.CategoryExists(categoryId))
                 {
                     return NotFound();
                 }
@@ -137,7 +137,7 @@ namespace E_Commerce.Controllers
         {
             try
             {
-                if (!_categoryService.CategoryExists(categoryId))
+                if (!await _categoryService.CategoryExists(categoryId))
                 {
                     return NotFound();
                 }

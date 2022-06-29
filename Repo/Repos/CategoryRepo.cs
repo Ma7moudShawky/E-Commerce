@@ -26,9 +26,9 @@ namespace Repo.Repos
             await _appDbContext.SaveChangesAsync();
         }
 
-        public bool CategoryExists(int id)
+        public async Task<bool> CategoryExists(int id)
         {
-            return _appDbContext.Categories.Any(c => c.CategoryId == id);
+            return await _appDbContext.Categories.AnyAsync(c => c.CategoryId == id);
         }
 
         public async Task Delete(int categoryId)
@@ -38,10 +38,10 @@ namespace Repo.Repos
             await _appDbContext.SaveChangesAsync();
         }
 
-        public async Task<Category> Get(int id, bool isTracked = false)
+        public async Task<Category> Get(int id, bool isTracked = false, bool includeProducts = false)
         {
             var dbSet = isTracked ? _appDbContext.Categories : _appDbContext.Categories.AsNoTracking();
-
+            dbSet = includeProducts ? dbSet.Include(c => c.Products) : dbSet;
             Category category = await dbSet.FirstOrDefaultAsync(c => c.CategoryId == id);
             return category;
         }

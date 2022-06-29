@@ -23,9 +23,9 @@ namespace Service.Services
             await _categoryRepo.Add(categoryDTO);
         }
 
-        public bool CategoryExists(int id)
+        public async Task<bool> CategoryExists(int id)
         {
-            return _categoryRepo.CategoryExists(id);
+            return await _categoryRepo.CategoryExists(id);
         }
 
         public async Task Delete(int categoryId)
@@ -33,9 +33,9 @@ namespace Service.Services
             await _categoryRepo.Delete(categoryId);
         }
 
-        public async Task<CategoryDTO> Get(int categoryId)
+        public async Task<CategoryDTO> Get(int categoryId, bool isTracked = false, bool includeProducts = false)
         {
-            var category = await _categoryRepo.Get(categoryId);
+            var category = await _categoryRepo.Get(categoryId, isTracked, includeProducts);
             CategoryDTO categoryDTO = _mapper.Map<CategoryDTO>(category);
             return categoryDTO;
         }
@@ -52,9 +52,6 @@ namespace Service.Services
             await _categoryRepo.Update(categoryDTO);
         }
 
-        public Task Update(CategoryDTO categoryDTO, JsonPatchDocument patchDocument)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
