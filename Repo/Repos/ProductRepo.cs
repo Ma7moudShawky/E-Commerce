@@ -55,10 +55,7 @@ namespace Repo.Repos
         public async Task<IEnumerable<ProductDTOToReturn>> GetAll()
         {
             List<Product> products = await _appDbContext.Products.AsNoTracking().Include(p => p.Category).ToListAsync();
-            //List<Product> products = await _appDbContext.Products.AsNoTracking().ToListAsync();
-            //Product product = products[0];
-            //Category category = product.Category;
-            //Console.WriteLine(category.Name);
+            //List<Product> products = await _appDbContext.Products.ToListAsync();
             List<ProductDTOToReturn> result = _mapper.Map<List<ProductDTOToReturn>>(products);
             return result;
         }
