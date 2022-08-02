@@ -11,11 +11,12 @@ namespace E_Commerce.Profiles
         {
             CreateMap<ProductDTO, Product>();
             CreateMap<Product, ProductDTO>();
-            CreateMap<AddOrUpdateProduct, ProductDTO>();
+            CreateMap<AddProduct, ProductDTO>();
             CreateMap<Product, ProductDTOToReturn>();
             CreateMap<ProductDTOToReturn, ProductViewModel>();
-            CreateMap<AddOrUpdateProduct, ProductDTOToReturn>();
+            CreateMap<AddProduct, ProductDTOToReturn>();
             CreateMap<ProductDTOToReturn, Product>().ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category.CategoryId));
+            CreateMap<UpdateProduct, ProductDTOToReturn>();        
         }
     }
 }

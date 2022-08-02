@@ -22,7 +22,7 @@ namespace DbModels.Models
         [Required]
         public int Quantity { get; set; }
 
-        [Required, MaxLength(50)]
+        [Required, MaxLength(512)]
         public string ImagePath { get; set; }
 
         [Required, ForeignKey("Category")]

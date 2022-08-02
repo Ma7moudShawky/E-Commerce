@@ -14,18 +14,20 @@ namespace E_Commerce.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _environment;
 
-        public ProductController(IProductService productService, ICategoryService categoryService, IMapper mapper)
+        public ProductController(IProductService productService, ICategoryService categoryService, IMapper mapper, IWebHostEnvironment environment)
         {
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
             _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            this._environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
 
         [HttpPost]
         [ProducesResponseType(202)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult> Add(AddOrUpdateProduct addedProduct)
+        public async Task<ActionResult> Add([FromForm] AddProduct addedProduct)
         {
             try
             {
@@ -33,6 +35,7 @@ namespace E_Commerce.Controllers
                 {
                     return NotFound();
                 }
+                addedProduct.ImagePath = SaveImage(addedProduct.Image);
                 ProductDTO productDTO = _mapper.Map<ProductDTO>(addedProduct);
                 await _productService.Add(productDTO);
                 return Created("", null);
@@ -43,6 +46,19 @@ namespace E_Commerce.Controllers
                 Console.WriteLine(ex.Message);
                 return StatusCode(500);
             }
+
+        }
+
+        string SaveImage(IFormFile image)
+        {
+            string path = $"{Guid.NewGuid()}-{image.FileName}".Replace(" ", "-");
+            string fullPath = Path.Combine(this._environment.WebRootPath, "Images", path);
+            using (FileStream stream = new FileStream(fullPath, FileMode.Create))
+            {
+                image.CopyTo(stream);
+            }
+            string pathToReturn = Path.Combine("Images", path);
+            return pathToReturn;
 
         }
 
@@ -91,7 +107,7 @@ namespace E_Commerce.Controllers
         [HttpPut("{productId}")]
         [ProducesResponseType(404)]
         [ProducesResponseType(204)]
-        public async Task<ActionResult> Update(int productId, AddOrUpdateProduct updatedProduct)
+        public async Task<ActionResult> Update(int productId, [FromForm] UpdateProduct updatedProduct)
         {
             try
             {
@@ -99,6 +115,14 @@ namespace E_Commerce.Controllers
                 if (productDTOToReturn == null)
                 {
                     return NotFound();
+                }
+                if (updatedProduct.Image == null)
+                {
+                    updatedProduct.ImagePath = productDTOToReturn.ImagePath;
+                }
+                else
+                {
+                    updatedProduct.ImagePath = SaveImage(updatedProduct.Image);
                 }
                 productDTOToReturn = _mapper.Map<ProductDTOToReturn>(updatedProduct);
                 productDTOToReturn.Category = new CategoryDTO() { CategoryId = updatedProduct.CategoryId };
